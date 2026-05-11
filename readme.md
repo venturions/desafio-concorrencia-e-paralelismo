@@ -165,7 +165,7 @@ func ProcessPipeline(files []string, numWorkers int) *Report
 
 ## Checklist de entrega
 
-- [ ] Integrar a função `GenerateMockFiles()`
+- [X] Integrar a função `GenerateMockFiles()`
 - [ ] Implementar `ProcessSequential()` e medir tempo
 - [ ] Implementar `ProcessConcurrentNaive()` e confirmar `DATA RACE` com `go run -race .`
 - [ ] Implementar `ProcessConcurrentMutex()` e validar ausência de race conditions
