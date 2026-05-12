@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"path/filepath"
+	"sync"
 	"time"
 
 	"github.com/venturions/desafio-concorrencia-e-paralelismo/internal/utils"
@@ -72,6 +73,23 @@ func main() {
 		elapsed,
 	)
 
+	// start2 := time.Now()
+	// ProcessConcurrentNaive(files)
+	// elapsed2 := time.Since(start2)
+
+	// fmt.Printf(
+	// 	"Total events: %d\n"+
+	// 		"Total errors: %d\n"+
+	// 		"Events by type: %v\n"+
+	// 		"Events by region: %v\n"+
+	// 		"Time elapsed: %v\n",
+	// 	r.totalEvents,
+	// 	r.totalErrors,
+	// 	r.eventsByType,
+	// 	r.eventsByRegion,
+	// 	elapsed2,
+	// )
+
 }
 
 func ProcessSequential(files []string) *Report {
@@ -100,9 +118,32 @@ func ProcessSequential(files []string) *Report {
 
 func ProcessConcurrentNaive(files []string) *Report {
 	r := NewReport()
+	var wg = sync.WaitGroup{}
 
-	// TO DO IMPLEMENTATION
+	for _, file := range files {
+		wg.Add(1)
+		go func(file string) {
+			defer wg.Done()
+			lines, err := utils.ReadFile(file)
 
+			if err != nil {
+				r.AddError()
+				return
+			}
+
+			for _, line := range lines {
+				var event Event
+				if err := json.Unmarshal([]byte(line), &event); err != nil {
+					r.AddError()
+					continue
+				}
+
+				r.AddEvent(event)
+			}
+		}(file)
+	}
+
+	wg.Wait()
 	return r
 
 }
