@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/venturions/desafio-concorrencia-e-paralelismo/internal/processor"
@@ -14,7 +15,7 @@ const dirPath = "../tmp/logs"
 func main() {
 	fmt.Println("Iniciando geração de arquivos de log...")
 
-	if err := utils.GenerateMockFiles(dirPath, 200, 10000); err != nil {
+	if err := utils.GenerateMockFiles(dirPath, 100, 10000); err != nil {
 		fmt.Printf("Erro ao gerar arquivos de log: %v\n", err)
 		return
 	}
@@ -33,7 +34,7 @@ func main() {
 	r.PrintReport("Sequential", elapsed)
 
 	// start2 := time.Now()
-	// r2 := ProcessConcurrentNaive(files)
+	// r2 := processor.ProcessConcurrentNaive(files)
 	// elapsed2 := time.Since(start2)
 	// r2.PrintReport("Concurrent naive", elapsed2)
 
@@ -41,5 +42,10 @@ func main() {
 	r3 := processor.ProcessConcurrentMutex(files)
 	elapsed3 := time.Since(start3)
 	r3.PrintReport("Concurrent mutex", elapsed3)
+
+	start4 := time.Now()
+	r4 := processor.ProcessPipeline(files, runtime.NumCPU())
+	elapsed4 := time.Since(start4)
+	r4.PrintReport("Pipeline", elapsed4)
 
 }
